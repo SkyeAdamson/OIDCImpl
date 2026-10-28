@@ -2,7 +2,7 @@ using OIDCImpl;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
-RegistrationUtil.RegisterServices(builder.Services);
+RegistrationUtil.RegisterServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 

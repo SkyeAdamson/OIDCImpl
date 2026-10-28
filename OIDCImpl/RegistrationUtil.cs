@@ -1,12 +1,18 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using OIDCImpl.Data;
+using OIDCImpl.Models;
 
 namespace OIDCImpl;
 
 public static class RegistrationUtil
 {
-	public static void RegisterServices(IServiceCollection services)
+	public static void RegisterServices(IServiceCollection services, IConfiguration configuration)
 	{
 		RegisterCoreApiServices(services);
+		RegisterEntityFramework(services, configuration);
+		RegisterIdentityServices(services);
 	}
 
 	private static void RegisterCoreApiServices(IServiceCollection services)
@@ -23,5 +29,18 @@ public static class RegistrationUtil
 			opt.SubstituteApiVersionInUrl = true;
 		});
 		services.AddOpenApi();
+	}
+
+	private static void RegisterEntityFramework(IServiceCollection services, IConfiguration configuration)
+	{
+		services.AddDbContext<AppDbContext>(opt =>
+			opt.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+	}
+
+	private static void RegisterIdentityServices(IServiceCollection services)
+	{
+		services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+			.AddEntityFrameworkStores<AppDbContext>()
+			.AddDefaultTokenProviders();
 	}
 }
