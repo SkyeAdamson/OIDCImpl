@@ -39,7 +39,17 @@ public static class RegistrationUtil
 
 	private static void RegisterIdentityServices(IServiceCollection services)
 	{
-		services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+		services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(opt =>
+			{
+				// This goes against the current NIST guidelines for password-only authentication, which puts the focus
+				// on length over mixed character types.
+				// MFA and passkeys should be supported during this project, so I'm opting for a middle ground.
+				opt.Password.RequiredLength = 12;
+				opt.Password.RequireDigit = true;
+				opt.Password.RequireLowercase = true;
+				opt.Password.RequireNonAlphanumeric = true;
+				opt.Password.RequireUppercase = true;
+			})
 			.AddEntityFrameworkStores<AppDbContext>()
 			.AddDefaultTokenProviders();
 	}
