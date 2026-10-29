@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OIDCImpl", "OIDCImpl\OIDCImpl.csproj", "{71BB1B3A-ED7F-486D-8CB8-70DC80A37EB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OIDCImpl.Tests", "OIDCImpl.Tests\OIDCImpl.Tests.csproj", "{B8881E41-0D5D-4BE6-9470-E5FB6BF063C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{71BB1B3A-ED7F-486D-8CB8-70DC80A37EB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71BB1B3A-ED7F-486D-8CB8-70DC80A37EB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71BB1B3A-ED7F-486D-8CB8-70DC80A37EB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8881E41-0D5D-4BE6-9470-E5FB6BF063C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8881E41-0D5D-4BE6-9470-E5FB6BF063C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8881E41-0D5D-4BE6-9470-E5FB6BF063C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8881E41-0D5D-4BE6-9470-E5FB6BF063C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
