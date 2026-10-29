@@ -1,6 +1,8 @@
 ﻿using Asp.Versioning;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OIDCImpl.Config;
 using OIDCImpl.Data;
 using OIDCImpl.Models;
 
@@ -13,6 +15,7 @@ public static class RegistrationUtil
 		RegisterCoreApiServices(services);
 		RegisterEntityFramework(services, configuration);
 		RegisterIdentityServices(services);
+		RegisterValidators(services);
 	}
 
 	private static void RegisterCoreApiServices(IServiceCollection services)
@@ -39,18 +42,26 @@ public static class RegistrationUtil
 
 	private static void RegisterIdentityServices(IServiceCollection services)
 	{
+		services.AddSingleton<IPasswordConfiguration, DefaultPasswordConfiguration>();
+		services.AddSingleton<IUsernameConfiguration, DefaultUsernameConfiguration>();
+
+		using var serviceProvider = services.BuildServiceProvider().CreateScope();
+		var passwordConfig = serviceProvider.ServiceProvider.GetRequiredService<IPasswordConfiguration>();
 		services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(opt =>
 			{
-				// This goes against the current NIST guidelines for password-only authentication, which puts the focus
-				// on length over mixed character types.
-				// MFA and passkeys should be supported during this project, so I'm opting for a middle ground.
-				opt.Password.RequiredLength = 12;
-				opt.Password.RequireDigit = true;
-				opt.Password.RequireLowercase = true;
-				opt.Password.RequireNonAlphanumeric = true;
-				opt.Password.RequireUppercase = true;
+				
+				opt.Password.RequiredLength = passwordConfig.RequiredLength;
+				opt.Password.RequireDigit = passwordConfig.RequireDigit;
+				opt.Password.RequireLowercase = passwordConfig.RequireLowercase;
+				opt.Password.RequireNonAlphanumeric = passwordConfig.RequireNonAlphanumeric;
+				opt.Password.RequireUppercase = passwordConfig.RequireUppercase;
 			})
 			.AddEntityFrameworkStores<AppDbContext>()
 			.AddDefaultTokenProviders();
+	}
+
+	private static void RegisterValidators(IServiceCollection services)
+	{
+		services.AddValidatorsFromAssemblyContaining(typeof(RegistrationUtil));
 	}
 }
