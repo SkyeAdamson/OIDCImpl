@@ -44,19 +44,18 @@ public static class RegistrationUtil
 	{
 		services.AddSingleton<IPasswordConfiguration, DefaultPasswordConfiguration>();
 		services.AddSingleton<IUsernameConfiguration, DefaultUsernameConfiguration>();
-
-		using var serviceProvider = services.BuildServiceProvider().CreateScope();
-		var passwordConfig = serviceProvider.ServiceProvider.GetRequiredService<IPasswordConfiguration>();
-		services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(opt =>
+		
+		services.AddOptions<IdentityOptions>()
+			.Configure<IPasswordConfiguration>((opt, passwordConfig) =>
 			{
-				
 				opt.Password.RequiredLength = passwordConfig.RequiredLength;
 				opt.Password.RequireDigit = passwordConfig.RequireDigit;
 				opt.Password.RequireLowercase = passwordConfig.RequireLowercase;
 				opt.Password.RequireNonAlphanumeric = passwordConfig.RequireNonAlphanumeric;
 				opt.Password.RequireUppercase = passwordConfig.RequireUppercase;
-			})
-			.AddEntityFrameworkStores<AppDbContext>()
+			});
+
+		services.AddIdentity<ApplicationUser, IdentityRole<Guid>>().AddEntityFrameworkStores<AppDbContext>()
 			.AddDefaultTokenProviders();
 	}
 
