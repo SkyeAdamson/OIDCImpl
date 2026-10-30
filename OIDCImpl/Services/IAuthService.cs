@@ -4,5 +4,5 @@ namespace OIDCImpl.Services;
 
 public interface IAuthService
 {
-	public Task<bool> RegisterAsync(SignUpRequest request, CancellationToken cancellationToken);
+	public Task RegisterAsync(SignUpRequest request, CancellationToken cancellationToken);
 }

@@ -6,9 +6,9 @@ using OIDCImpl.Util;
 
 namespace OIDCImpl.Services;
 
-public class AuthService(UserManager<ApplicationUser> userManager) : IAuthService
+public class AuthService(UserManager<ApplicationUser> userManager, ILogger<AuthService> logger) : IAuthService
 {
-	public async Task<bool> RegisterAsync(SignUpRequest request, CancellationToken cancellationToken)
+	public async Task RegisterAsync(SignUpRequest request, CancellationToken cancellationToken)
 	{
 		var trimmedUsername = request.Username.Trim();
 		var trimmedEmail = request.Email.Trim();
@@ -21,12 +21,14 @@ public class AuthService(UserManager<ApplicationUser> userManager) : IAuthServic
 		};
 		
 		var result = await userManager.CreateAsync(user, request.Password);
-		if (!result.Succeeded)
+		if (result.Succeeded)
 		{
-			IdentityErrorHandler.HandleIdentityError(result);
+			return;
 		}
 
-		return true;
+		var errorCode = result.ToSignUpError();
+		logger.Log(errorCode == UserRegistrationErrorCode.Unknown ? LogLevel.Error : LogLevel.Information, "Registration failed with {ErrorCode}; identity codes: {IdentityCodes}", errorCode, result.Errors.Select(e => e.Code));
+		throw new UserRegistrationException(errorCode);
 	}
 
 	private static void ValidateRequestFields(string trimmedUsername, string trimmedEmail, string password)

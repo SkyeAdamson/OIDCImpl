@@ -14,7 +14,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 	public async Task<ActionResult> RegisterAsync([FromBody] SignUpRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		var result = await authService.RegisterAsync(request, cancellationToken);
-		return Ok();
+		await authService.RegisterAsync(request, cancellationToken);
+		return Created();
 	}
 }

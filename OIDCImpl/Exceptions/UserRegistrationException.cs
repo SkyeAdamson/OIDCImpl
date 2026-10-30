@@ -18,13 +18,9 @@ public class UserRegistrationException : Exception
 	{
 		return errorCode switch
 		{
-			UserRegistrationErrorCode.Unknown => "An unknown error occurred.",
-			UserRegistrationErrorCode.UsernameEmpty => "Username cannot be empty.",
-			UserRegistrationErrorCode.EmailEmpty => "Email cannot be empty.",
-			UserRegistrationErrorCode.PasswordEmpty => "Password cannot be empty.",
 			UserRegistrationErrorCode.UserAlreadyExists => "Username or email already exists.",
 			UserRegistrationErrorCode.PasswordRequirementsNotMet => "Password does not meet requirements.",
-			_ => throw new ArgumentOutOfRangeException(nameof(errorCode), errorCode, null)
+			_ => "Registration failed."
 		};
 	}
 }

@@ -1,11 +1,14 @@
-﻿using Asp.Versioning;
+﻿using System.Diagnostics;
+using Asp.Versioning;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OIDCImpl.Config;
 using OIDCImpl.Data;
+using OIDCImpl.Exceptions.Handlers;
 using OIDCImpl.Models;
 using OIDCImpl.Services;
+using OIDCImpl.Validators;
 
 namespace OIDCImpl;
 
@@ -22,7 +25,12 @@ public static class RegistrationUtil
 
 	private static void RegisterCoreApiServices(IServiceCollection services)
 	{
-		services.AddControllers();
+		services.AddProblemDetails(opt => opt.CustomizeProblemDetails = context =>
+		{
+			context.ProblemDetails.Extensions["traceId"] = Activity.Current?.Id ?? context.HttpContext.TraceIdentifier;
+		});
+		services.AddExceptionHandler<GlobalExceptionHandler>();
+		services.AddControllers(opt => opt.Filters.Add<ValidationFilter>());
 		services.AddApiVersioning(opt =>
 		{
 			opt.DefaultApiVersion = new ApiVersion(1, 0);
