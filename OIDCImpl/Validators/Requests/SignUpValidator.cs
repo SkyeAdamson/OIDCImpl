@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Options;
 using OIDCImpl.Config;
 using OIDCImpl.Requests;
 
@@ -6,10 +7,10 @@ namespace OIDCImpl.Validators.Requests;
 
 public class SignUpValidator : AbstractValidator<SignUpRequest>
 {
-	public SignUpValidator(IUsernameConfiguration usernameConfiguration, IPasswordConfiguration passwordConfiguration)
+	public SignUpValidator(IOptions<UsernameOptions> usernameOptions, IOptions<PasswordOptions> passwordOptions)
 	{
-		RuleFor(x => x.Username).NotEmpty().MaximumLength(usernameConfiguration.MaxLength);
+		RuleFor(x => x.Username).NotEmpty().MaximumLength(usernameOptions.Value.MaxLength);
 		RuleFor(x => x.Email).NotEmpty().EmailAddress();
-		RuleFor(x => x.Password).NotEmpty().MinimumLength(passwordConfiguration.RequiredLength);
+		RuleFor(x => x.Password).NotEmpty().MinimumLength(passwordOptions.Value.RequiredLength);
 	}
 }

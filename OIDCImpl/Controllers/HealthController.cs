@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OIDCImpl.Controllers;
 
@@ -9,6 +10,7 @@ namespace OIDCImpl.Controllers;
 public class HealthController : ControllerBase
 {
 	[HttpGet]
+	[DisableRateLimiting]
 	public ActionResult Get()
 	{
 		return Ok();

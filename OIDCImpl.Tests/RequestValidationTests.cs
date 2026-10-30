@@ -1,4 +1,5 @@
-﻿using OIDCImpl.Config;
+﻿using Microsoft.Extensions.Options;
+using OIDCImpl.Config;
 using OIDCImpl.Requests;
 using OIDCImpl.Validators.Requests;
 
@@ -7,8 +8,19 @@ namespace OIDCImpl.Tests;
 [TestFixture]
 public class RequestValidationTests
 {
-	private readonly IUsernameConfiguration _usernameConfig = new DefaultUsernameConfiguration();
-	private readonly IPasswordConfiguration _passwordConfig = new DefaultPasswordConfiguration();
+	private readonly IOptions<UsernameOptions> _usernameConfig = Options.Create(new UsernameOptions
+	{
+		MaxLength = 32
+	});
+
+	private readonly IOptions<PasswordOptions> _passwordConfig = Options.Create(new PasswordOptions
+	{
+		RequiredLength = 12,
+		RequireDigit = true,
+		RequireLowercase = true,
+		RequireUppercase = true,
+		RequireNonAlphanumeric = true
+	});
 	
 	private readonly string _validUsername = "ValidUsername123";
 	private readonly string _validPassword = "ValidPassword123!";
@@ -32,7 +44,7 @@ public class RequestValidationTests
             Assert.That(result.Errors, Has.Count.EqualTo(1));
         });
 
-        Assert.That(result.Errors[0].ErrorMessage, Does.Contain($"The length of 'Username' must be {_usernameConfig.MaxLength} characters or fewer"));
+        Assert.That(result.Errors[0].ErrorMessage, Does.Contain($"The length of 'Username' must be {_usernameConfig.Value.MaxLength} characters or fewer"));
 	}
 
 	[Test]
@@ -53,7 +65,7 @@ public class RequestValidationTests
             Assert.That(result.Errors, Has.Count.EqualTo(1));
         });
         
-        Assert.That(result.Errors[0].ErrorMessage, Does.Contain($"The length of 'Password' must be at least {_passwordConfig.RequiredLength} characters"));
+        Assert.That(result.Errors[0].ErrorMessage, Does.Contain($"The length of 'Password' must be at least {_passwordConfig.Value.RequiredLength} characters"));
 	}
 
 	[Test]

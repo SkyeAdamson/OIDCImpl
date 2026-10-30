@@ -12,6 +12,7 @@ RegistrationUtil.RegisterServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
 app.UseSerilogRequestLogging(opt =>
 {
 	opt.GetLevel = (context, _, ex) => ex != null || context.Response.StatusCode >= 500 ? LogEventLevel.Error :
@@ -24,6 +25,7 @@ app.UseSerilogRequestLogging(opt =>
 });
 
 app.UseExceptionHandler();
+app.UseRateLimiter();
 if (app.Environment.IsDevelopment())
 {
 	app.MapOpenApi();
