@@ -21,11 +21,11 @@ public class RequestValidationTests
 		RequireUppercase = true,
 		RequireNonAlphanumeric = true
 	});
-	
-	private readonly string _validUsername = "ValidUsername123";
-	private readonly string _validPassword = "ValidPassword123!";
-	private readonly string _validEmail = "valid.email@xyz.com";
-	
+
+	private const string ValidUsername = "ValidUsername123";
+	private const string ValidPassword = "ValidPassword123!";
+	private const string ValidEmail = "valid.email@xyz.com";
+
 	[Test]
 	public void SignUp_Fails_WhenUsername_Is_Too_Long()
 	{
@@ -33,8 +33,8 @@ public class RequestValidationTests
 		var request = new SignUpRequest
 		{
 			Username = new string('a', 51),
-			Password = _validPassword,
-			Email = _validEmail
+			Password = ValidPassword,
+			Email = ValidEmail
 		};
 		
 		var result = validator.Validate(request);
@@ -53,9 +53,9 @@ public class RequestValidationTests
 		var validator = new SignUpValidator(_usernameConfig, _passwordConfig);
 		var request = new SignUpRequest
 		{
-			Username = _validUsername,
+			Username = ValidUsername,
 			Password = "Short1!",
-			Email = _validEmail
+			Email = ValidEmail
 		};
 		
 		var result = validator.Validate(request);
@@ -74,8 +74,8 @@ public class RequestValidationTests
 		var validator = new SignUpValidator(_usernameConfig, _passwordConfig);
 		var request = new SignUpRequest
 		{
-			Username = _validUsername,
-			Password = _validPassword,
+			Username = ValidUsername,
+			Password = ValidPassword,
 			Email = "invalid.email"
 		};
 		
@@ -96,7 +96,7 @@ public class RequestValidationTests
 		var request = new LoginRequest
 		{
 			Identifier = string.Empty,
-			Password = _validPassword,
+			Password = ValidPassword,
 		};
 		
 		var result = validator.Validate(request);
@@ -115,7 +115,7 @@ public class RequestValidationTests
 		var validator = new LoginValidator();
 		var request = new LoginRequest
 		{
-			Identifier = _validUsername,
+			Identifier = ValidUsername,
 			Password = string.Empty,
 		};
 		
@@ -135,9 +135,9 @@ public class RequestValidationTests
 		var validator = new SignUpValidator(_usernameConfig, _passwordConfig);
 		var request = new SignUpRequest
 		{
-			Username = _validUsername,
-			Password = _validPassword,
-			Email = _validEmail
+			Username = ValidUsername,
+			Password = ValidPassword,
+			Email = ValidEmail
 		};
 		
 		var result = validator.Validate(request);
@@ -150,8 +150,8 @@ public class RequestValidationTests
 		var validator = new LoginValidator();
 		 var request = new LoginRequest
 		 {
-			 Identifier = _validUsername,
-			 Password = _validPassword,
+			 Identifier = ValidUsername,
+			 Password = ValidPassword,
 		 };
 		 
 		 var result = validator.Validate(request);

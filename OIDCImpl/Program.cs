@@ -35,3 +35,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
+
+// We add this partial class to allow for integration testing of the Program class.
+public partial class Program;
