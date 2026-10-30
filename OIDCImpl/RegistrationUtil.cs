@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OIDCImpl.Config;
 using OIDCImpl.Data;
 using OIDCImpl.Models;
+using OIDCImpl.Services;
 
 namespace OIDCImpl;
 
@@ -15,6 +16,7 @@ public static class RegistrationUtil
 		RegisterCoreApiServices(services);
 		RegisterEntityFramework(services, configuration);
 		RegisterIdentityServices(services);
+		RegisterAuthServices(services);
 		RegisterValidators(services);
 	}
 
@@ -53,10 +55,17 @@ public static class RegistrationUtil
 				opt.Password.RequireLowercase = passwordConfig.RequireLowercase;
 				opt.Password.RequireNonAlphanumeric = passwordConfig.RequireNonAlphanumeric;
 				opt.Password.RequireUppercase = passwordConfig.RequireUppercase;
+
+				opt.User.RequireUniqueEmail = true;
 			});
 
 		services.AddIdentity<ApplicationUser, IdentityRole<Guid>>().AddEntityFrameworkStores<AppDbContext>()
 			.AddDefaultTokenProviders();
+	}
+
+	private static void RegisterAuthServices(IServiceCollection services)
+	{
+		services.AddScoped<IAuthService, AuthService>();
 	}
 
 	private static void RegisterValidators(IServiceCollection services)
