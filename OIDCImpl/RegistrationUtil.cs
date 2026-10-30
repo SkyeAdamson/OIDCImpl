@@ -2,6 +2,7 @@
 using Asp.Versioning;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OIDCImpl.Config;
 using OIDCImpl.Data;
@@ -16,6 +17,7 @@ public static class RegistrationUtil
 {
 	public static void RegisterServices(IServiceCollection services, IConfiguration configuration)
 	{
+		RegisterLogging(services);
 		RegisterCoreApiServices(services);
 		RegisterEntityFramework(services, configuration);
 		RegisterIdentityServices(services);
@@ -23,11 +25,26 @@ public static class RegistrationUtil
 		RegisterValidators(services);
 	}
 
+	private static void RegisterLogging(IServiceCollection services)
+	{
+		services.Configure<ApiBehaviorOptions>(opt =>
+		{
+			var defaultFactory = opt.InvalidModelStateResponseFactory;
+			opt.InvalidModelStateResponseFactory = context =>
+			{
+				var logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("OIDCImpl.Validation");
+				logger.LogInformation("Model validation failed for {Fields}",
+					context.ModelState.Where(e => e.Value?.Errors.Count > 0).Select(e => e.Key));
+				return defaultFactory(context);
+			};
+		});
+	}
+
 	private static void RegisterCoreApiServices(IServiceCollection services)
 	{
 		services.AddProblemDetails(opt => opt.CustomizeProblemDetails = context =>
 		{
-			context.ProblemDetails.Extensions["traceId"] = Activity.Current?.Id ?? context.HttpContext.TraceIdentifier;
+			context.ProblemDetails.Extensions["traceId"] = Activity.Current?.TraceId.ToString() ?? context.HttpContext.TraceIdentifier;
 		});
 		services.AddExceptionHandler<GlobalExceptionHandler>();
 		services.AddControllers(opt => opt.Filters.Add<ValidationFilter>());

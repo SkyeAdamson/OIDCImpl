@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OIDCImpl.Validators;
 
-public class ValidationFilter(IServiceProvider serviceProvider) : IAsyncActionFilter
+public class ValidationFilter(IServiceProvider serviceProvider, ILogger<ValidationFilter> logger) : IAsyncActionFilter
 {
+	// Wire in FluentValidation.
 	public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
 	{
 		foreach (var arg in context.ActionArguments.Values.Where(a => a is not null))
@@ -23,6 +24,9 @@ public class ValidationFilter(IServiceProvider serviceProvider) : IAsyncActionFi
 			{
 				continue;
 			}
+
+			logger.LogInformation("Validation failed for {RequestType}: {Failures}", arg!.GetType().Name,
+				result.Errors.Select(e => $"{e.PropertyName}:{e.ErrorCode}"));
 
 			context.Result = new BadRequestObjectResult(new ValidationProblemDetails(result.ToDictionary()));
 			return;
